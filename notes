@@ -1,0 +1,7 @@
+1)sed 替换掉所有的行后面的换行符（整个文件变成一行）
+	sed ':a;N;s/\n//;b a' my.txt 
+	#其中:a是标签的作用，后面的b a表示跳转到a标签
+
+2)shell下找出wlan这块网卡的ip地址
+	ifconfig | sed -n '/wlan0/,+1p;' | sed -n '2p'| cut -d: -f2| cut -d" " -f1
+	#笨方法，能用就行。。
