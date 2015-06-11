@@ -5,3 +5,138 @@
 2)shell下找出wlan这块网卡的ip地址
 	ifconfig | sed -n '/wlan0/,+1p;' | sed -n '2p'| cut -d: -f2| cut -d" " -f1
 	#笨方法，能用就行。。
+
+3) 十进制数字
+sed '1d' file	#删除第一行
+sed '1,10s/kevin/mandy/' file #将第一行到第十行首个匹配”kevin“字符串替换为”mandy“字符串
+
+4）正则表达式
+sed '/kevin/d' file 删除有字符串"kevin"的行
+sed '/^kevin/d' file 删除以字符串”kevin“为起始的行
+
+5）特殊符号转义
+sed '/\$kevin/p' file
+显示有字符串”$kevin"的行
+
+6）逗号分隔
+sed '5,7d' file 删除五到七行的所有内容
+sed '/kevin/,/mandy/d' file 删除第一个匹配字符串"kevin"到第一个匹配字符串"mandy"的所有行 
+
+7）组合方式
+sed '1,/kevin/d' file 删除第一行到第一个匹配字符串"kevin"的所有行
+sed '/kevin/,+4d' file 删除从匹配字符串”kevin“开始到其后四行为止的行
+sed '/kevin/,~3d' file 删除从匹配字符串”kevin“到三的倍数为止的行
+sed '1~5d' file 从第一行开始每五行删除一行
+sed -n '/kevin\|mandy/p' file 显示配置字符串"kevin"或"mandy"的行
+
+8）特殊情况
+sed '$d' file 删除最后一行
+
+=========================
+
+关于正则
+
+1）^ 行首定位符 /^kevin/
+
+2）$ 行位定位符	/kevin$/
+
+3）. 除换行外的单个字符 /k..in/
+
+4）* 零个或者多个前一个字符 /go*gle/
+
+5）[ ] 匹配指定字符组内的任一字符
+/[Kk]evin/ 匹配包含 Kevin 和 kevin 的行
+
+6）[^] 匹配不在指定字符组内的任一字符
+/[^A-JL-Za-jm-z]evin/
+
+7）\( \) 保存被匹配的字符
+s/\(192\.168\)\.0\.254/\1\.1\.254/
+最多可以使用 9 个标签,模式中最左边的标签是第一个。
+
+8）& 保存查找串以便在替换串中引用
+s/kevin/&zou/ 符号&代表查找串,字符串 kevin 后加上字符串 zou
+
+9 \< 单词起始边界匹配符
+/\<kevin/ 匹配以 kevin 开头的单词
+
+10）\>单词结束边界匹配符
+/kevin\>/ 匹配以 kevin 结束的单词
+
+11）x\{m,n\} 至少 M 个最多 N 个字符 X
+/0\{3,6\}/ 重复3到6次的0
+
+===============
+
+函数
+
+1）在当前行后添加一或多行
+sed '2akevin' file 在第二行下新添加一行字符串为”kevin“
+
+2）用新字符串修改(替换)当前行中的字符串
+sed '2ckevin' file 将第二行替换为字符串”kevin “
+
+3）i 在当前行上添加一或多行
+sed '2ikevin' file 将字符串”kevin“插入原文件第二行前成为新的第二行
+
+4）查找替换
+sed 's/kevin/mandy/' file将字符串 kevin 替换为字符串 mandy,间隔符号为"/"
+
+sed 's#kevin#mandy#' file
+将字符串 kevin 替换为字符串 mandy,间隔符号为"#"
+
+sed '/kevin/,/mandy/s/$/ line tail/' file
+的行将字符串“ line tail"添加到行尾
+
+sed 's/[Kk]evin/&zou/g' file
+找到从第一个字符串"kevin"到第一个字符串“mandy”
+将所有字符串“Kevin”或“kevin”后都加上字符串“zou”
+
+特殊情况
+sed '1,5y/abcdefgh/ABCDEFGH/' file
+
+
+5）保存和读取（这个比较复杂了）
+ sed -e '/kevin/h' -e ‘$g' file 把包含字符串”kevin“的行复制到缓冲区域中,将最
+后放入缓冲区域的行替换文件最后一行
+
+sed -e '/kevin/H' -e '$g' file 把所有包含字符串”kevin“的行追加复制到缓冲区域
+中,将其所有内容替换文件最后一行
+
+6）输入输出
+sed -n '/kevin/p' file与-n 命令两个参数配合只打印包含字符串”kevin“的行
+
+ sed '/kevin/r /etc/hosts' file 在文件中找到字符串"kevin"后就将文件/etc/hosts 的
+内容添加到这一行后
+
+ sed '/kevin/w /tmp/kevinfile' file 找到有字符串”kevin“的行将其写入/tmp/kevinfile 文
+件中
+
+7）简单控制流
+sed '/kevin/!d' file 删除不包含字符串”kevin“的行
+
+sed '/kevin/{n; d}' file 删除带字符串”kevin“行的下一行
+
+sed '/localhost/l' /etc/hosts
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
